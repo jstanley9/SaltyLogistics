@@ -1,0 +1,9 @@
+﻿<Application x:Class="SaltyLogistics.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SaltyLogistics"
+             StartupUri="SaltPilesWindow.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>

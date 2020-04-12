@@ -1,0 +1,67 @@
+﻿<Window x:Class="SaltyLogistics.SaltPilesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SaltyLogistics"
+        mc:Ignorable="d"
+        Title="Salt Piles" Height="450" Width="800">
+    <Grid IsSharedSizeScope="True" Margin="5,5,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Label Name="LabelAccountList" Content="Active Accounts" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="#FF020B42"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition SharedSizeGroup="MenuItems" Width="Auto"/>
+                <ColumnDefinition Width="2"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Name="OpenAccount" Content="Open Account" Margin="5,5,5,5" Padding="5,5"/>
+                <Button Grid.Row="1" Name="AddAccount" Content="New Account" Margin="5,5,5,5" Padding="5,5"/>
+                <Button Grid.Row="2" Name="SuspenAccount" Content="Suspend Account" Margin="5,5,5,5" Padding="5,5"/>
+                <Button Grid.Row="3" Name="DeleteAccount" Content="Delete Account" Margin="5,5,5,5" Padding="5,5"/>
+                <Separator Grid.Row="4"/>
+                <Button Grid.Row="5" Name="Exit" Content="Exit" Margin="5,5,5,5" Padding="5,5"/>
+                <Separator Grid.Row="6"/>
+                <CheckBox Grid.Row="7" Name="CheckShowAllAccounts" Content="Show All Accounts" IsChecked="False"/>
+            </Grid>
+            <Grid Grid.Column="1" Background="Black"/>
+            <Grid Grid.Column="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" MinHeight="200">
+                        <DataGrid Name="GridAccountList" ItemsSource="{Binding}" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Active" Visibility="Visible" Binding="{Binding IsActive}"/>
+                                <DataGridTextColumn Header="Account" Binding="{Binding AccountName}" Width="*"/>
+                                <DataGridTextColumn Header="Balance" Binding="{Binding Balance}" Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Label Name="LabelBalance" Content="Balance:" HorizontalAlignment="Right"/>
+                    </Grid>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
