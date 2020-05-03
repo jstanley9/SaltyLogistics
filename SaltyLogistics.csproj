@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,6 +56,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\ISaltMine.cs" />
+    <Compile Include="Model\SaltExceptions.cs" />
+    <Compile Include="Model\SaltMine.cs" />
+    <Compile Include="ViewModel\ISaltPiles.cs" />
+    <Compile Include="ViewModel\SaltPiles.cs" />
     <Page Include="SaltPilesWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -64,6 +70,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\Accounts.cs" />
+    <Compile Include="Model\CoreModel.cs" />
     <Compile Include="SaltPilesWindow.xaml.cs">
       <DependentUpon>SaltPilesWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -94,6 +101,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="View\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
