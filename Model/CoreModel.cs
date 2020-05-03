@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,7 +37,10 @@ namespace SaltyLogistics.Model
         private CoreModel()
         {
             saltMine = new SaltMine();
+        }
 
+        private void Init()
+        {
             SaltPiles = new SaltPiles();
         }
 
@@ -47,9 +52,26 @@ namespace SaltyLogistics.Model
                 if (_coreModel == null)
                 {
                     _coreModel = new CoreModel();
+                    _coreModel.Init();
+
                 }
             }
             return _coreModel;
         }
+
+        public bool getConfigBool(string section, string preference, bool defaultValue = false)
+        {
+            string value = saltMine.GetConfig(section, preference);
+            return (value == Constants.True);
+        }
+
+        public void setConfigBool(string section, string preference, bool newValue)
+        {
+            string valueToStore = (newValue) ? Constants.True : Constants.False;
+            saltMine.SetConfig(section, preference, valueToStore);
+        }
+
     }
+
+
 }

@@ -56,6 +56,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Constants.cs" />
     <Compile Include="Model\ISaltMine.cs" />
     <Compile Include="Model\SaltExceptions.cs" />
     <Compile Include="Model\SaltMine.cs" />

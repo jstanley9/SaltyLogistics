@@ -9,5 +9,7 @@ namespace SaltyLogistics.Model
 {
     interface ISaltMine
     {
+        string GetConfig(string section, string preference);
+        void SetConfig(string section, string preference, string value);
     }
 }

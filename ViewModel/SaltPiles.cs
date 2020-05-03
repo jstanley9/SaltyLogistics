@@ -10,6 +10,7 @@ namespace SaltyLogistics.ViewModel
 {
     public class SaltPiles : ISaltPiles
     {
+        private CoreModel core;
         public IList<Accounts> AccountList { get; private set; }
 
         public decimal NetBalance
@@ -17,8 +18,21 @@ namespace SaltyLogistics.ViewModel
             get => SumAccountList();
         }
 
+        private bool showAllAccounts;
+        public bool ShowAllAccounts
+        {
+            get => showAllAccounts;
+            set
+            {
+                SetShowAllAccounts(value);
+            }
+        }
+
         public SaltPiles()
         {
+            core = CoreModel.GetCoreModel();
+
+            showAllAccounts = core.getConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts);
             AccountList = new List<Accounts>();
 
             AccountList.Add(new Accounts { IsActive = true, Account = "Checking", Balance = 12_569m });
@@ -27,6 +41,14 @@ namespace SaltyLogistics.ViewModel
             AccountList.Add(new Accounts { IsActive = true, Account = "CD", Balance = 5_000m });
         }
 
+        private void SetShowAllAccounts(bool newSetting)
+        {
+            if (showAllAccounts != newSetting)
+            {
+                showAllAccounts = newSetting;
+                core.setConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts, newSetting);
+            }
+        }
 
         private decimal SumAccountList()
         {
