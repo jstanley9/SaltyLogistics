@@ -32,7 +32,7 @@ namespace SaltyLogistics.ViewModel
         {
             core = CoreModel.GetCoreModel();
 
-            showAllAccounts = core.getConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts);
+            showAllAccounts = core.GetShowingAllAccounts();
             AccountList = new List<Accounts>();
 
             AccountList.Add(new Accounts { IsActive = true, Account = "Checking", Balance = 12_569m });
@@ -46,7 +46,7 @@ namespace SaltyLogistics.ViewModel
             if (showAllAccounts != newSetting)
             {
                 showAllAccounts = newSetting;
-                core.setConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts, newSetting);
+                core.UpdateShowingAllAccounts(newSetting);
             }
         }
 

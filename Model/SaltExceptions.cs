@@ -21,4 +21,13 @@ namespace SaltyLogistics.Model
 
         }
     }
+
+    public class SaltInvalidArgumentType : SaltException
+    {
+        public SaltInvalidArgumentType(string message) : base(message)
+        {
+
+        }
+    }
+
 }

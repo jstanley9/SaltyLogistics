@@ -1,11 +1,13 @@
-﻿using SaltyLogistics.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using SaltyLogistics.Preferences;
+using SaltyLogistics.View;
 
 /**
  * <summary>
@@ -17,7 +19,7 @@ using System.Threading.Tasks;
  * All cross communication between windows goes through this module.
  * </summary>
  */
-namespace SaltyLogistics.Model
+namespace SaltyLogistics.Model 
 {
     public sealed class CoreModel
     {
@@ -31,19 +33,20 @@ namespace SaltyLogistics.Model
          * Connect to the database support
          */
         private ISaltMine saltMine;
-
-        public ISaltPiles SaltPiles { get; private set; }
-        
+        private Preferences.IPreferences preferences;
+        private List<ISaltWindowBase> openWindows;
         private CoreModel()
         {
-            saltMine = new SaltMine();
+            SaltMine mine = new SaltMine();
+            saltMine = mine;
+            preferences = new Preferences.Preferences(mine);
+            openWindows = new List<ISaltWindowBase>();
         }
 
         private void Init()
         {
-            SaltPiles = new SaltPiles();
+            
         }
-
         
         public static CoreModel GetCoreModel()
         {
@@ -59,18 +62,29 @@ namespace SaltyLogistics.Model
             return _coreModel;
         }
 
-        public bool getConfigBool(string section, string preference, bool defaultValue = false)
+        public bool GetShowingAllAccounts()
         {
-            string value = saltMine.GetConfig(section, preference);
-            return (value == Constants.True);
+            return preferences.GetConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts);
         }
 
-        public void setConfigBool(string section, string preference, bool newValue)
+        public void UpdateShowingAllAccounts(bool isShowing)
         {
-            string valueToStore = (newValue) ? Constants.True : Constants.False;
-            saltMine.SetConfig(section, preference, valueToStore);
+            preferences.SetConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts, isShowing);
         }
 
+        /** 
+         * Shut down any open windows and threads that may be running.
+         * Do not return until they are shutdown.
+         */
+        public void ShutDown()
+        {
+
+        }
+
+        public void ShowAccountMaintenance(OpenWindowAction Action, string Id = "")
+        {
+            ISaltWindowBase AccountMaint = new AccountMaintenance();
+        }
     }
 
 

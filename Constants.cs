@@ -8,9 +8,11 @@ namespace SaltyLogistics
 {
     class Constants
     {
+        public static readonly string AddAccount = "Add " + ViewAccount;
         public static readonly string At_Preference = "@preference";
         public static readonly string At_Section = "@section";
         public static readonly string At_Value = "@value";
+        public static readonly string EditAccount = "Edit " + ViewAccount;
         public static readonly string False = "False";
         public static readonly string ProgSetting = "ProgSetting";
         public static readonly string SaltPileSQLProvider = "SaltPileSQLProvider";
@@ -18,5 +20,6 @@ namespace SaltyLogistics
         public static readonly string SP_GetConfig = "dbo.GetConfig";
         public static readonly string SP_UpdateConfig = "dbo.UpdateConfig";
         public static readonly string True = "True";
+        public static readonly string ViewAccount = "Account ";
     }
 }

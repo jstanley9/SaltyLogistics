@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SaltyLogistics.ViewModel;
 
 namespace SaltyLogistics
 {
@@ -24,17 +23,85 @@ namespace SaltyLogistics
     /// </summary>
     public partial class SaltPilesWindow : Window
     {
-        private ISaltPiles saltPiles;
+        private CoreModel core;
+        public IList<Accounts> AccountList { get; private set; }
 
+        public decimal NetBalance
+        {
+            get => SumAccountList();
+        }
+
+        private bool showAllAccounts;
+        public bool ShowAllAccounts
+        {
+            get => showAllAccounts;
+            set => SetShowAllAccounts(value);
+        }
+
+//*********************************************************************************************************************
         public SaltPilesWindow()
         {
             InitializeComponent();
 
-            CoreModel core = CoreModel.GetCoreModel();
-            saltPiles = core.SaltPiles;
+            Init();
+        }
+//*********************************************************************************************************************
+        private void Exit_Click(object sender, RoutedEventArgs eventArgs)
+        {
+            core.ShutDown();
+            this.Close();
+        }
 
-            GridAccountList.ItemsSource = saltPiles.AccountList;
-            LabelNetBalance.Content = saltPiles.NetBalance.ToString("C");
+        private void Init()
+        {
+            core = CoreModel.GetCoreModel();
+            InitAccountList();
+
+            GridAccountList.ItemsSource = AccountList;
+            LabelNetBalance.Content = NetBalance.ToString("C");
+        }
+
+        private void InitAccountList()
+        {
+            AccountList = new List<Accounts>();
+            LoadAccountList();
+        }
+
+        private void LoadAccountList()
+        {
+            AccountList.Add(new Accounts { IsActive = true, AccountName = "Checking", Balance = 12_569m });
+            AccountList.Add(new Accounts { IsActive = false, AccountName = "Savings", Balance = 212.66m });
+            AccountList.Add(new Accounts { IsActive = true, AccountName = "Money Market", Balance = 1_808.18m });
+        }
+        private void SetShowAllAccounts(bool newSetting)
+        {
+            if (showAllAccounts != newSetting)
+            {
+                showAllAccounts = newSetting;
+                core.UpdateShowingAllAccounts(newSetting);
+            }
+        }
+
+        private void CheckShowAllAccounts_Click(object sender, RoutedEventArgs e) => 
+                     showAllAccounts = CheckShowAllAccounts.IsChecked ??  false;
+
+
+        private decimal SumAccountList()
+        {
+            decimal sum = 0m;
+            foreach (Accounts account in AccountList)
+            {
+                if (account.IsActive)
+                {
+                    sum += account.Balance;
+                }
+            }
+            return sum;
+        }
+
+        private void AddAccount_Click(object sender, RoutedEventArgs e)
+        {
+            core.ShowAccountMaintenance(OpenWindowAction.NewItem);
         }
     }
 }
