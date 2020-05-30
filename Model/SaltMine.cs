@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using SaltyLogistics.DB;
 using SaltyLogistics.Preferences;
 using SaltyLogistics.Model;
 
@@ -16,52 +17,47 @@ namespace SaltyLogistics.Model
 {
     public class SaltMine : ISaltMine, IPreferencesIO
     {
-        private SqlConnection dbConnection;
+        private DBSupport db;    
         
-        private static readonly object padlock = new object(); 
-        private Int64 lastId; 
 //*********************************************************************************************************************
         public SaltMine()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings[Constants.SaltPileSQLProvider].ConnectionString;
-            dbConnection = new SqlConnection(connectionString);
+            db = new DBSupport();
         }
 //*********************************************************************************************************************
-        private void CloseConnection()
+        public List<IAccountTypeClient> GetAccountTypesActive()
         {
-            if (dbConnection.State != ConnectionState.Closed)
+            List<IAccountTypeClient> accountTypeList = new List<IAccountTypeClient>();
+            using (SqlCommand select = new SqlCommand(Constants.GetAccounttypesActive, db.Connection))
             {
-                dbConnection.Close();
-            }
-        }
-
-        private Int64 CreateID()
-        {
-            Int64 id;
-            lock (padlock) // Make thread safe
-            {
-                do
+                select.CommandType = CommandType.StoredProcedure;
+                db.OpenConnection();
+                try
                 {
-                    DateTime dt = DateTime.Now;
-                    string idString = dt.Year.ToString("D4")
-                                    + dt.Month.ToString("D2")
-                                    + dt.Day.ToString("D2")
-                                    + dt.Hour.ToString("D2")
-                                    + dt.Minute.ToString("D2")
-                                    + dt.Second.ToString("D2")
-                                    + dt.Millisecond.ToString("D3");
-                    id = Int64.Parse(idString);
-                } while (id == lastId);
-                lastId = id;
+
+                    using (SqlDataReader readRow = select.ExecuteReader())
+                    {
+                        while (readRow.Read())
+                        {
+                            IAccountTypeDB accountType = new AccountType();
+                            accountType.AssignFromDBData(readRow);
+                            accountTypeList.Add(accountType as IAccountTypeClient);
+                        }
+                    }
+                }
+                finally
+                {
+                    db.CloseConnection();
+                }
             }
-            return id;
+            return accountTypeList;
         }
 
         public string GetConfig(string section, string preference)
         {
             string resultValue;
 
-            OpenConnection();
+            db.OpenConnection();
             using (SqlCommand command = NewConfigNonQuery(Constants.SP_GetConfig, section, preference))
             {
                 SqlParameter paramResult = new SqlParameter
@@ -75,11 +71,12 @@ namespace SaltyLogistics.Model
 
                 command.ExecuteNonQuery();
 
-                resultValue = ConvertFromDBVal<string>(command.Parameters[Constants.At_Value].Value);
+                resultValue = DBSupport.ConvertFromDBVal<string>(command.Parameters[Constants.At_Value].Value);
             }
-            CloseConnection();
+            db.CloseConnection();
             return resultValue;
         }
+
 
         private SqlCommand NewConfigNonQuery(string storedProcedureName, string section, string preference)
         {
@@ -92,7 +89,7 @@ namespace SaltyLogistics.Model
 
         private SqlCommand NewStoredProcedureCommand(string storedProcedureName)
         {
-            SqlCommand command = new SqlCommand(storedProcedureName, dbConnection);
+            SqlCommand command = new SqlCommand(storedProcedureName, db.Connection);
             command.CommandType = CommandType.StoredProcedure;
             return command;
         }
@@ -109,39 +106,9 @@ namespace SaltyLogistics.Model
             };
         }
 
-        private void OpenConnection()
-        {
-            switch (dbConnection.State)
-            {
-                case ConnectionState.Closed:
-                    {
-                        dbConnection.Open();
-                        break;
-                    }
-                case ConnectionState.Open:
-                case ConnectionState.Connecting:
-                case ConnectionState.Executing:
-                case ConnectionState.Fetching:
-                    {
-                        break;
-                    }
-                case ConnectionState.Broken:
-                    {
-                        dbConnection.Close();
-                        dbConnection.Open();
-                        break;
-                    }
-                default:
-                    {
-                        throw new SaltDBException($"Unknown ConnectionState of {dbConnection.State}");
-                    }
-
-            }
-        }
-
         public void SetConfig(string section, string preference, string valueToStore)
         {
-            OpenConnection();
+            db.OpenConnection();
             try
             {
                 using (SqlCommand command = NewConfigNonQuery(Constants.SP_UpdateConfig, section, preference))
@@ -153,45 +120,15 @@ namespace SaltyLogistics.Model
             }
             finally
             {
-                CloseConnection();
+                db.CloseConnection();
             }
         }
 
-        private static T ConvertFromDBVal<T>(object val)
+
+        public Accounts SaveAccountDefinition(Accounts Accounts)
         {
-            if (val == DBNull.Value || val == null)
-            {
-                return default(T);
-            }
-            else
-            {
-                return (T)val;
-            }
+            Accounts.InsertUpdateAccount(db);
+            return Accounts;
         }
-
-        public void LoadAccountTypeList(List<AccountType> accountTypeList)
-        {
-            accountTypeList.Clear();
-            OpenConnection();
-            try
-            {
-                SqlCommand cmdSelect = NewStoredProcedureCommand(Constants.SP_GetAccountTypesActive);
-                using (SqlDataReader dataReader = cmdSelect.ExecuteReader())
-                {
-                    foreach (IDataRecord dataRow in dataReader)
-                    {
-                        IAccountTypeDB accountType = new AccountType();
-                        accountType.LoadFromDataRecord(dataRow);
-                        accountTypeList.Add(accountType);
-                    }
-                }
-                foreach (DataTableReader dataReader in )
-            }
-            finally
-            {
-                CloseConnection();
-            }
-        }
-
     }
 }

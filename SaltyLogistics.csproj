@@ -73,6 +73,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Constants.cs" />
+    <Compile Include="DB\DBSupport.cs" />
+    <Compile Include="Model\AccountType.cs" />
+    <Compile Include="Model\IAccountsClient.cs" />
+    <Compile Include="Model\IAccountsDB.cs" />
+    <Compile Include="Model\IAccountTypeClient.cs" />
+    <Compile Include="Model\IAccountTypeDB.cs" />
     <Compile Include="Model\OpenWindowAction.cs" />
     <Compile Include="Preferences\IPreferences.cs" />
     <Compile Include="Preferences\IPreferencesIO.cs" />
@@ -80,6 +86,7 @@
     <Compile Include="Model\SaltExceptions.cs" />
     <Compile Include="Model\SaltMine.cs" />
     <Compile Include="Preferences\Preferences.cs" />
+    <Compile Include="Utils\StringUtilities.cs" />
     <Compile Include="View\AccountMaintenance.xaml.cs">
       <DependentUpon>AccountMaintenance.xaml</DependentUpon>
     </Compile>
@@ -146,6 +153,13 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DB\SQL\GetAccountTypes.sql" />
+    <Content Include="DB\SQL\GetConfig.sql" />
+    <Content Include="DB\SQL\InsertAccounts.sql" />
+    <Content Include="DB\SQL\UpdateAccounts.sql" />
+    <Content Include="DB\SQL\UpdateConfig.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

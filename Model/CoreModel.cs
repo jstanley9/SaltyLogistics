@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SaltyLogistics.View;
+using SaltyLogistics.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,8 +8,8 @@ using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using SaltyLogistics.Preferences;
-using SaltyLogistics.View;
 
 /**
  * <summary>
@@ -67,6 +69,18 @@ namespace SaltyLogistics.Model
             return preferences.GetConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts);
         }
 
+        public List<IAccountTypeClient> LoadComboAccountType(ComboBox ComboAccountTypes)
+        {
+            List<IAccountTypeClient> accountTypes = saltMine.GetAccountTypesActive();
+            ComboAccountTypes.Items.Clear();
+            foreach (IAccountTypeClient accountType in accountTypes)
+            {
+                ComboAccountTypes.Items.Add(accountType.Name);
+            }
+            return accountTypes;
+
+        }
+
         public void UpdateShowingAllAccounts(bool isShowing)
         {
             preferences.SetConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts, isShowing);
@@ -78,12 +92,20 @@ namespace SaltyLogistics.Model
          */
         public void ShutDown()
         {
-
+            foreach (ISaltWindowBase saltWindow in openWindows)
+            {
+                saltWindow.CloseWindow();
+            }
         }
 
         public void ShowAccountMaintenance(OpenWindowAction Action, string Id = "")
         {
             ISaltWindowBase AccountMaint = new AccountMaintenance();
+        }
+
+        public Accounts SaveAccountDefinition(Accounts Account)
+        {
+            return ISaltMine.SaveAccountDefinition(Account);
         }
     }
 

@@ -9,8 +9,9 @@ namespace SaltyLogistics.Model
 {
     public interface ISaltMine
     {
+        List<IAccountTypeClient> GetAccountTypesActive();
         string GetConfig(string section, string preference);
+        Accounts SaveAccountDefinition(Accounts Account);
         void SetConfig(string section, string preference, string value);
-        void LoadAccountTypeList(List<AccountType> accountTypeList);
     }
 }

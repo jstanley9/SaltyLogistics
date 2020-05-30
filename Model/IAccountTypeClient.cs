@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace SaltyLogistics.Model
 {
-    interface IAccountItemClient
+    public interface IAccountTypeClient
     {
+        long Id { get; }
+        bool IsActive { get; }
+        bool IsAsset { get; set; }
+        bool IsInterestComputed { get; set; }
+        string Name { get; set; }
+
+        void Activate();
+        void Deactivate();
     }
 }
