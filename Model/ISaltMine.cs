@@ -13,5 +13,6 @@ namespace SaltyLogistics.Model
         string GetConfig(string section, string preference);
         Accounts SaveAccountDefinition(Accounts Account);
         void SetConfig(string section, string preference, string value);
+        void UpdateAccountActiveStatus(long id, bool isActive);
     }
 }

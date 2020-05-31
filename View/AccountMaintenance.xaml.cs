@@ -22,12 +22,15 @@ namespace SaltyLogistics.View
     /// </summary>
     public partial class AccountMaintenance : Window, ISaltWindowBase
     {
+        private List<Accounts> accountList;
         private List<IAccountTypeClient> accountTypes;
-        private CoreModel core;
+        private readonly CoreModel core;
         private Accounts currentAccount;
-        private Brush defaultColor;
+        private readonly Brush defaultColor;
         private bool isModified = false;
-        private bool readOnly = false;
+        private MaintType maintType = MaintType.NewAccount;
+
+        private enum MaintType { ReadOnly, NewAccount, EditAccount }
 //=====================================================================================================================
         public AccountMaintenance()
         {
@@ -39,21 +42,31 @@ namespace SaltyLogistics.View
 //=====================================================================================================================
         public void CloseWindow()
         {
+            core.WindowIsClosing(this);
             Close();
         }
 
-        public void InitWindow(OpenWindowAction Action, object Params)
+        public void InitWindow(OpenWindowAction Action, object Info, int ItemIndex = -1)
         {
+            if (Info != null)
+            {
+                accountList = Info as List<Accounts>;
+            }
+            else
+            {
+                accountList = new List<Accounts>();
+            }
+
             switch (Action)
             {
                 case OpenWindowAction.NewItem:
                     InitializeNewAccount();
                     break;
                 case OpenWindowAction.ViewItem:
-                    InitializeViewAccount(Params);
+                    InitializeViewAccount(ItemIndex);
                     break;
                 case OpenWindowAction.EditItem:
-                    InitializeEditAccount(Params);
+                    InitializeEditAccount(ItemIndex);
                     break;
                 default:
                     throw new InvalidEnumArgumentException("Unknown Open Window Action {Action}");
@@ -62,42 +75,41 @@ namespace SaltyLogistics.View
             accountTypes = core.LoadComboAccountType(ComboAccountType);
             Scatter();
         }
+        
         private void InitializeNewAccount()
         {
             currentAccount = new Accounts();
             Title = Constants.AddAccount;
-            readOnly = false;
+            maintType = MaintType.NewAccount;
         }
-        private void InitializeViewAccount(object Params)
+        
+        private void InitializeViewAccount(int ItemIndex)
         {
-            SetAccount(Params, false, Constants.EditAccount);
+            SetAccount(ItemIndex, MaintType.ReadOnly, Constants.EditAccount);
         }
-        private void InitializeEditAccount(object Params)
+       
+        private void InitializeEditAccount(int ItemIndex)
         {
-            SetAccount(Params, true, Constants.ViewAccount);
+            SetAccount(ItemIndex, MaintType.EditAccount, Constants.ViewAccount);
         }
 
-        private void SetAccount(Object Params, bool IsReadOnly, string NewTitle)
+        private void SetAccount(int ItemIndex, MaintType MType, string NewTitle)
         {
-            if (Params is null)
+            if (ItemIndex < 0)
             {
                 InitializeNewAccount();
             }
-            else if (Params is Accounts)
+            else 
             {
-                currentAccount = Params as Accounts;
+                currentAccount = accountList[ItemIndex];
                 Title = NewTitle + currentAccount.Name;
-                readOnly = IsReadOnly;
-            }
-            else
-            {
-                throw new SaltInvalidArgumentType($"Expected {currentAccount.GetType()} received {Params.GetType()}");
+                maintType = MType;
             }
         }
 
         private void Scatter()
         {
-            if (readOnly)
+            if (maintType == MaintType.ReadOnly)
             {
                 ChangeButtons.Visibility = Visibility.Hidden;
                 Cancel.Visibility = Visibility.Hidden;
@@ -121,6 +133,7 @@ namespace SaltyLogistics.View
                 TextInterestRate.IsReadOnly = false;
                 TextMonthsToKeep.IsReadOnly = false;
             }
+            UpdateSuspendAccountButton();
             SaveAccount.IsEnabled = isModified;
 
             AccountChanged.Content = isModified ? Constants.Changed : String.Empty;
@@ -150,7 +163,7 @@ namespace SaltyLogistics.View
             }
         }
 
-        private void _TextChanged(object sender, TextChangedEventArgs e)
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             AccountHasBeenModified();
             if (!isModified)
@@ -160,7 +173,7 @@ namespace SaltyLogistics.View
             }
         }
 
-        private void _SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             AccountHasBeenModified();
         }
@@ -215,6 +228,12 @@ namespace SaltyLogistics.View
             if (Gather())
             {
                 Save();
+                if (maintType == MaintType.NewAccount)
+                {
+                    accountList.Add(currentAccount);
+                    maintType = MaintType.EditAccount;
+                    Title = Title = Constants.EditAccount + currentAccount.Name;
+                }
                 Scatter();
             }
         }
@@ -235,6 +254,12 @@ namespace SaltyLogistics.View
                 result = false;
                 MessageBox.Show(Constants.InvalidMonthsToKeep, Constants.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            if (ComboAccountType.SelectedIndex < 0)
+            {
+                result = false;
+                MessageBox.Show(Constants.MustGiveAnAccountType, Constants.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
             if (result)
             {
                 currentAccount.Name = TextAccountName.Text.Trim();
@@ -247,8 +272,47 @@ namespace SaltyLogistics.View
 
         private void Save()
         {
-            currentAccount = core.SaveAccountDefinition(currentAccount);
-            isModified = false;
+            if (isModified)
+            {
+                currentAccount = core.SaveAccountDefinition(currentAccount);
+                isModified = false;
+            }
+        }
+
+        private void SuspendAccount_Click(object sender, RoutedEventArgs e)
+        {
+            currentAccount.IsActive = !currentAccount.IsActive;
+            if (currentAccount.Id != 0)
+            {
+                core.UpdateAccountActiveStatus(currentAccount);
+            }
+            UpdateSuspendAccountButton();
+        }
+
+        private void UpdateSuspendAccountButton()
+        {
+            if (currentAccount.IsActive)
+            {
+                SuspendAccount.Content = Constants.Suspend;
+                SuspendAccount.Background = Brushes.Pink;
+            }
+            else
+            {
+                SuspendAccount.Content = Constants.Activate;
+                SuspendAccount.Background = Brushes.LightGreen;
+            }
+        }
+
+        private void SaveAndClose_Click(object sender, RoutedEventArgs e)
+        {
+            if (maintType != MaintType.ReadOnly)
+            {
+                if (Gather())
+                {
+                    Save();
+                }
+            }
+            CloseWindow();
         }
     }
 }

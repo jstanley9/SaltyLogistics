@@ -53,7 +53,8 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0" MinHeight="200">
-                        <DataGrid Name="GridAccountList" ItemsSource="{Binding}" AutoGenerateColumns="False">
+                        <DataGrid Name="GridAccountList" ItemsSource="{Binding}" AutoGenerateColumns="False" SelectionMode="Single"
+                                  SelectionUnit="FullRow">
                             <DataGrid.Columns>
                                 <DataGridCheckBoxColumn Header="Active" Visibility="Visible" Binding="{Binding IsActive}" />
                                 <DataGridTextColumn Header="Account" Binding="{Binding AccountName}" Width="*"/>

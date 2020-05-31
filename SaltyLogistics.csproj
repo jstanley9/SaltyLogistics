@@ -158,6 +158,7 @@
     <Content Include="DB\SQL\GetAccountTypes.sql" />
     <Content Include="DB\SQL\GetConfig.sql" />
     <Content Include="DB\SQL\InsertAccounts.sql" />
+    <Content Include="DB\SQL\UpdateAccountActiveStatus.sql" />
     <Content Include="DB\SQL\UpdateAccounts.sql" />
     <Content Include="DB\SQL\UpdateConfig.sql" />
   </ItemGroup>

@@ -69,9 +69,9 @@ namespace SaltyLogistics
 
         private void LoadAccountList()
         {
-            AccountList.Add(new Accounts { IsActive = true, AccountName = "Checking", Balance = 12_569m });
-            AccountList.Add(new Accounts { IsActive = false, AccountName = "Savings", Balance = 212.66m });
-            AccountList.Add(new Accounts { IsActive = true, AccountName = "Money Market", Balance = 1_808.18m });
+            AccountList.Add(new Accounts { IsActive = true, Name = "Checking", Balance = 12_569m });
+            AccountList.Add(new Accounts { IsActive = false, Name = "Savings", Balance = 212.66m });
+            AccountList.Add(new Accounts { IsActive = true, Name = "Money Market", Balance = 1_808.18m });
         }
         private void SetShowAllAccounts(bool newSetting)
         {
@@ -101,7 +101,7 @@ namespace SaltyLogistics
 
         private void AddAccount_Click(object sender, RoutedEventArgs e)
         {
-            core.ShowAccountMaintenance(OpenWindowAction.NewItem);
+            core.ShowAccountMaintenance(OpenWindowAction.NewItem, AccountList);
         }
     }
 }

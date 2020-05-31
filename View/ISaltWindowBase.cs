@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SaltyLogistics.View
 {
-    interface ISaltWindowBase
+    public interface ISaltWindowBase
     {
-        void InitWindow(OpenWindowAction Action, Object Params);
         void CloseWindow();
+        int GetHashCode();
     }
 }

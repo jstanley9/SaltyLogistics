@@ -77,23 +77,6 @@ namespace SaltyLogistics.Model
             return resultValue;
         }
 
-
-        private SqlCommand NewConfigNonQuery(string storedProcedureName, string section, string preference)
-        {
-            SqlCommand command = NewStoredProcedureCommand(storedProcedureName);
-
-            command.Parameters.Add(NewConfigParam(Constants.At_Section, section));
-            command.Parameters.Add(NewConfigParam(Constants.At_Preference, preference));
-            return command;
-        }
-
-        private SqlCommand NewStoredProcedureCommand(string storedProcedureName)
-        {
-            SqlCommand command = new SqlCommand(storedProcedureName, db.Connection);
-            command.CommandType = CommandType.StoredProcedure;
-            return command;
-        }
-
         private SqlParameter NewConfigParam(string paramName, string paramValue, int paramSize = 30)
         {
             return new SqlParameter
@@ -104,6 +87,21 @@ namespace SaltyLogistics.Model
                 Value = paramValue,
                 Direction = ParameterDirection.Input
             };
+        }
+
+        private SqlCommand NewConfigNonQuery(string storedProcedureName, string section, string preference)
+        {
+            SqlCommand command = db.NewStoredProcedureCommand(storedProcedureName);
+
+            command.Parameters.Add(NewConfigParam(Constants.At_Section, section));
+            command.Parameters.Add(NewConfigParam(Constants.At_Preference, preference));
+            return command;
+        }
+
+        public Accounts SaveAccountDefinition(Accounts Accounts)
+        {
+            Accounts.InsertUpdateAccount(db);
+            return Accounts;
         }
 
         public void SetConfig(string section, string preference, string valueToStore)
@@ -123,12 +121,9 @@ namespace SaltyLogistics.Model
                 db.CloseConnection();
             }
         }
-
-
-        public Accounts SaveAccountDefinition(Accounts Accounts)
+        public void UpdateAccountActiveStatus(long id, bool isActive)
         {
-            Accounts.InsertUpdateAccount(db);
-            return Accounts;
+            Accounts.UpdateAccountActiveStatus(db, id, isActive);
         }
     }
 }

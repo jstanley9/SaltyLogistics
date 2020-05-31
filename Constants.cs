@@ -9,6 +9,7 @@ namespace SaltyLogistics
     class Constants
     {
         public static readonly string AccountIdType = "AccountIdType";
+        public static readonly string Activate = "Activate";
         public static readonly string AddAccount = "Add " + ViewAccount;
         public static readonly string AnAccountMustHaveAName = "The account must have a name!";
         public static readonly string AppName = "Salt";
@@ -30,6 +31,7 @@ namespace SaltyLogistics
         public static readonly string IsActive = "IsActive";
         public static readonly string IsAsset = "IsAsset";
         public static readonly string IsInterestComputed = "IsInterestComputed";
+        public static readonly string MustGiveAnAccountType = "Must select an account type";
         public static readonly string Name = "Name";
         public static readonly string NameId = "NameId";
         public static readonly string ProgSetting = "ProgSetting";
@@ -41,8 +43,10 @@ namespace SaltyLogistics
         public static readonly string SP_InsertAccounts = "InsertAccounts";
         public static readonly string SP_UpdateAccounts = "UpdateAccounts";
         public static readonly string SP_UpdateConfig = "dbo.UpdateConfig";
+        public static readonly string SP_UpdateAccountActiveStatus = "UpdateAccountActiveStatus";
         public static readonly string StatusActive = "*** Active ***";
         public static readonly string StatusSuspended = "*** Suspended ***";
+        public static readonly string Suspend = "Suspend";
         public static readonly string True = "True";
         public static readonly string ViewAccount = "Account ";
 

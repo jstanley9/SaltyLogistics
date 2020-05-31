@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using SaltyLogistics.Preferences;
+using System.Windows.Interop;
 
 /**
  * <summary>
@@ -34,11 +35,13 @@ namespace SaltyLogistics.Model
         /**
          * Connect to the database support
          */
-        private ISaltMine saltMine;
-        private Preferences.IPreferences preferences;
-        private List<ISaltWindowBase> openWindows;
+        private readonly ISaltMine saltMine;
+        private readonly Preferences.IPreferences preferences;
+        private readonly List<ISaltWindowBase> openWindows;
+        private bool shuttingDown;
         private CoreModel()
         {
+            shuttingDown = false;
             SaltMine mine = new SaltMine();
             saltMine = mine;
             preferences = new Preferences.Preferences(mine);
@@ -81,6 +84,11 @@ namespace SaltyLogistics.Model
 
         }
 
+        public void UpdateAccountActiveStatus(Accounts currentAccount)
+        {
+            saltMine.UpdateAccountActiveStatus(currentAccount.Id, currentAccount.IsActive);
+        }
+
         public void UpdateShowingAllAccounts(bool isShowing)
         {
             preferences.SetConfigBool(Constants.ProgSetting, Constants.ShowAllAccounts, isShowing);
@@ -92,20 +100,36 @@ namespace SaltyLogistics.Model
          */
         public void ShutDown()
         {
+            shuttingDown = true;
             foreach (ISaltWindowBase saltWindow in openWindows)
             {
                 saltWindow.CloseWindow();
             }
         }
 
-        public void ShowAccountMaintenance(OpenWindowAction Action, string Id = "")
+        public void ShowAccountMaintenance(OpenWindowAction Action, object Info = null)
         {
-            ISaltWindowBase AccountMaint = new AccountMaintenance();
+            AccountMaintenance accountMaint = new AccountMaintenance();
+            accountMaint.InitWindow(Action, Info);
+            openWindows.Add(accountMaint);
+            accountMaint.Show();
         }
 
-        public Accounts SaveAccountDefinition(Accounts Account)
+        public Accounts SaveAccountDefinition(Accounts Account) => saltMine.SaveAccountDefinition(Account);
+
+        public void WindowIsClosing(ISaltWindowBase Win)
         {
-            return ISaltMine.SaveAccountDefinition(Account);
+            if (!shuttingDown)
+            {
+                for (int winIx = 0; winIx < openWindows.Count; winIx++)
+                {
+                    if (Win == openWindows[winIx])
+                    {
+                        openWindows.RemoveAt(winIx);
+                        break;
+                    }
+                }
+            }
         }
     }
 

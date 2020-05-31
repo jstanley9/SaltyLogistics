@@ -23,11 +23,6 @@ namespace SaltyLogistics.Model
         public bool IsAsset { get; private set; }
         public int MonthsToKeep { get; set; }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
         public override bool Equals(object obj)
         {
             if (obj is Accounts)
@@ -38,6 +33,11 @@ namespace SaltyLogistics.Model
             {
                 return false;
             }
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
 
         public Accounts InsertUpdateAccount(DBSupport db)
@@ -75,6 +75,24 @@ namespace SaltyLogistics.Model
         {
             AccountTypeId = AccountType.Id;
             AccountTypeName = AccountType.Name;
+        }
+        public static void UpdateAccountActiveStatus(DBSupport db, long id, bool isActive)
+        {
+            using (SqlCommand updateIsActive = db.NewStoredProcedureCommand(Constants.SP_UpdateAccountActiveStatus))
+            {
+                DBSupport.AddParameterBigInt(updateIsActive, Constants.At_Id, id);
+                DBSupport.AddParameterBit(updateIsActive, Constants.At_IsActive, isActive);
+
+                db.OpenConnection();
+                try
+                {
+                    updateIsActive.ExecuteNonQuery();
+                }
+                finally
+                {
+                    db.CloseConnection();
+                }
+            }
         }
     }
 }

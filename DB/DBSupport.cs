@@ -77,7 +77,8 @@ namespace SaltyLogistics.DB
                 ParameterName = name,
                 SqlDbType = SqlDbType.NVarChar,
                 Size = length,
-                Direction = ParameterDirection.Input
+                Direction = ParameterDirection.Input,
+                Value = value
             };
             command.Parameters.Add(paramResult);
         }
@@ -94,7 +95,7 @@ namespace SaltyLogistics.DB
         {
             if (val == DBNull.Value || val == null)
             {
-                return default(T);
+                return default;
             }
             else
             {
@@ -152,5 +153,14 @@ namespace SaltyLogistics.DB
                     }
             }
         }
+        public SqlCommand NewStoredProcedureCommand(string storedProcedureName)
+        {
+            SqlCommand command = new SqlCommand(storedProcedureName, Connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            return command;
+        }
+
     }
 }
